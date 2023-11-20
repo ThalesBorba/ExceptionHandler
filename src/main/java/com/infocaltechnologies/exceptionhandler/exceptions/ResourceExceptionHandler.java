@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -56,13 +57,73 @@ public class ResourceExceptionHandler{
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler({HttpRequestMethodNotSupportedException .class})
+    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
     public ResponseEntity<StandardError> methodNotAllowed(Exception ex , HttpServletRequest request) {
         StandardError error =
                 new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.METHOD_NOT_ALLOWED.value(),
                         ex.getLocalizedMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(error);
     }
+
+    @ExceptionHandler({ProxyAuthException.class})
+    public ResponseEntity<StandardError> proxyAuthRequired(Exception ex , HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.PROXY_AUTHENTICATION_REQUIRED.value(),
+                        ex.getLocalizedMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.PROXY_AUTHENTICATION_REQUIRED).body(error);
+    }
+
+    @ExceptionHandler({TimeoutException.class})
+    public ResponseEntity<StandardError> requestTimeout(Exception ex , HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.REQUEST_TIMEOUT.value(),
+                        ex.getLocalizedMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(error);
+    }
+
+    @ExceptionHandler({ConflictException.class})
+    public ResponseEntity<StandardError> conflict(Exception ex , HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.CONFLICT.value(),
+                        ex.getLocalizedMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler({UnsupportedException.class})
+    public ResponseEntity<StandardError> unsuported(Exception ex , HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+                        ex.getLocalizedMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(error);
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<StandardError> invalidAtribute(Exception ex, HttpServletRequest request) {
+        String isolatedErrorMessage = getConstraintDefaultMessage(ex);
+        StandardError error =
+                new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                        isolatedErrorMessage, request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+    }
+
+    private String getConstraintDefaultMessage(Exception ex) {
+        String errorMessage = ex.getLocalizedMessage();
+        String startTag = "]]; default message [";
+        String endTag = "]";
+        int startIndex = errorMessage.indexOf(startTag) + startTag.length();
+        int endIndex = errorMessage.indexOf(endTag, startIndex);
+        return errorMessage.substring(startIndex, endIndex);
+    }
+
+    @ExceptionHandler({TooManyRequestsException.class})
+    public ResponseEntity<StandardError> tooManyRequests(Exception ex , HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.TOO_MANY_REQUESTS.value(),
+                        ex.getLocalizedMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
+    }
+
+
 
     @ExceptionHandler({InternalServerException.class})
     public ResponseEntity<StandardError> internalError(Exception ex , HttpServletRequest request) {
