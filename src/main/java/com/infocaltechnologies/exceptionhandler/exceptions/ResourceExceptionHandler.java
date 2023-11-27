@@ -1,5 +1,6 @@
 package com.infocaltechnologies.exceptionhandler.exceptions;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import static com.infocaltechnologies.exceptionhandler.exceptions.SaveStackTrace
 @ControllerAdvice
 public class ResourceExceptionHandler{
 
-    @ExceptionHandler({BadRequestException.class})
+    @ExceptionHandler({BadRequestException.class, JwtException.class})
     public ResponseEntity<StandardError> badRequest(Exception ex , HttpServletRequest request) {
         return generateResponse(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), request);
     }
