@@ -2,6 +2,7 @@ package com.infocaltechnologies.exceptionhandler.exceptions;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -60,7 +61,7 @@ public class ResourceExceptionHandler{
         return generateResponse(HttpStatus.REQUEST_TIMEOUT, ex.getLocalizedMessage(), request);
     }
 
-    @ExceptionHandler({ConflictException.class})
+    @ExceptionHandler({ConflictException.class, DataIntegrityViolationException.class})
     public ResponseEntity<StandardError> conflict(Exception ex , HttpServletRequest request) {
         return generateResponse(HttpStatus.CONFLICT, ex.getLocalizedMessage(), request);
     }
