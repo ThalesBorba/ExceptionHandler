@@ -4,12 +4,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 
 import static com.infocaltechnologies.exceptionhandler.exceptions.SaveStackTrace.saveStackTraceToFile;
 
@@ -63,11 +65,12 @@ public class ResourceExceptionHandler{
     }
 
     @ExceptionHandler({UnsupportedException.class})
-    public ResponseEntity<StandardError> unsuported(Exception ex , HttpServletRequest request) {
+    public ResponseEntity<StandardError> unsupported(Exception ex , HttpServletRequest request) {
         return generateResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getLocalizedMessage(), request);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, DateTimeParseException.class,
+            InvalidFormatException.class})
     public ResponseEntity<StandardError> invalidAtribute(Exception ex, HttpServletRequest request) {
         String isolatedErrorMessage = getConstraintDefaultMessage(ex);
         return generateResponse(HttpStatus.UNPROCESSABLE_ENTITY, isolatedErrorMessage, request);
