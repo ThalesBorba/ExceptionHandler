@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,7 +19,7 @@ import java.time.format.DateTimeParseException;
 
 import static com.infocaltechnologies.exceptionhandler.exceptions.SaveStackTrace.saveStackTraceToFile;
 
-
+@EnableWebMvc
 @ControllerAdvice
 public class ResourceExceptionHandler{
 
@@ -44,6 +46,14 @@ public class ResourceExceptionHandler{
     @ExceptionHandler({ObjectNotFoundException.class})
     public ResponseEntity<StandardError> objectNotFound(Exception ex , HttpServletRequest request) {
         return generateResponse(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), request);
+    }
+
+    @ExceptionHandler({NoHandlerFoundException.class})
+    public ResponseEntity<StandardError> urlNotFound(Exception ex , HttpServletRequest request) {
+        StandardError error = new StandardError(LocalDateTime.now(ZoneId.of("UTC")), 404,
+                "A url requisitada não existe. Por favor confira se não houve erro de digitação",
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
