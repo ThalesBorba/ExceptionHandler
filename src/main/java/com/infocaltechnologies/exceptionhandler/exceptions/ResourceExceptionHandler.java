@@ -119,6 +119,7 @@ public class ResourceExceptionHandler{
                 new StandardError(LocalDateTime.now(ZoneId.of("UTC")), HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         "Ocorreu um erro inesperado, entre em contato com o administrador", request.getRequestURI());
         saveStackTraceToFile(ex);
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
