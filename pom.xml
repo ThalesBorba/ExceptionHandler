@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.infocaltechnologies</groupId>
 	<artifactId>exceptionHandler</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.6</version>
 	<name>exceptionhandler</name>
-	<description>Exception Dependancy</description>
+	<description>Exception Dependency</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

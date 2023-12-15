@@ -22,7 +22,6 @@ import java.util.List;
 
 import static com.infocaltechnologies.exceptionhandler.exceptions.SaveStackTrace.saveStackTraceToFile;
 
-@Slf4j
 @EnableWebMvc
 @ControllerAdvice
 public class ResourceExceptionHandler{
